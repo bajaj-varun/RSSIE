@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rssie-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rssie-frontend
+  template:
+    metadata:
+      labels:
+        app: rssie-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: rssie-frontend:latest 
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NEXT_PUBLIC_API_URL
+          value: "/api-proxy" # This uses the Next.js rewrite to proxy to the internal service
+        
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: elastic-credentials
+              key: OTEL_EXPORTER_OTLP_ENDPOINT
+        - name: OTEL_EXPORTER_OTLP_HEADERS
+          valueFrom:
+            secretKeyRef:
+              name: elastic-credentials
+              key: OTEL_EXPORTER_OTLP_HEADERS
+        - name: OTEL_SERVICE_NAME
+          value: "rssie-frontend-k8s"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rssie-frontend-service
+spec:
+  selector:
+    app: rssie-frontend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000
+  type: LoadBalancer
