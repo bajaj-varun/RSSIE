@@ -26,7 +26,7 @@ export class SearchService implements OnModuleInit {
 
     async searchSimilarVectors(vector: number[], limit = 5) {
         const result = await this.elasticsearchService.search({
-            index: 'safety-manuals',
+            index: this.configService.get<string>("indexName"),
             knn: {
                 field: 'embedding',
                 query_vector: vector,

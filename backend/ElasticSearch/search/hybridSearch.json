@@ -1,0 +1,43 @@
+GET safety-manuals/_search
+{
+    "query": {
+        "bool": {
+            "should": [
+                {
+                    "terms": {
+                        "keywords": [
+                            "runway",
+                            "friction",
+                            "safety",
+                            "excursion"
+                        ],
+                        "boost": 3.0
+                    }
+                },
+                {
+                    "match": {
+                        "summary": {
+                            "query": "runway safety procedures",
+                            "boost": 2.0
+                        }
+                    }
+                },
+                {
+                    "knn": {
+                        "field": "text_embedding",
+                        "query_vector_builder": {
+                            "text_embedding": {
+                                "model_id": "safety-manuals-inference",
+                                "model_text": "runway safety procedures"
+                            }
+                        },
+                        "k": 10,
+                        "num_candidates": 50,
+                        "boost": 1.0
+                    }
+                }
+            ],
+            "minimum_should_match": 1
+        }
+    }
+}

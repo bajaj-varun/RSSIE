@@ -1,0 +1,27 @@
+{
+    "endpoints": [
+        {
+            "inference_id": "safety-manuals-inference",
+            "task_type": "text_embedding",
+            "service": "jinaai",
+            "service_settings": {
+                "model_id": "jina-embeddings-v5-text-small",
+                "input_output": {
+                    "input_field": "text",
+                    "output_field": "text_embedding"
+                },
+                "rate_limit": {
+                    "requests_per_minute": 2000
+                },
+                "dimensions": 1024,
+                "embedding_type": "float",
+                "similarity": "cosine"
+            },
+            "chunking_settings": {
+                "strategy": "sentence",
+                "max_chunk_size": 250,
+                "sentence_overlap": 1
+            }
+        }
+    ]
+}

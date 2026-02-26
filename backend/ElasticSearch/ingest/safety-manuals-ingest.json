@@ -1,0 +1,93 @@
+PUT _ingest/pipeline/safety-manuals-ingest
+{
+  "description": "Pipeline for safety manuals with keyword extraction, summarization, and semantic embeddings",
+  "processors": [
+    {
+      "script": {
+        "description": "Extract keywords from text using frequency analysis",
+        "lang": "painless",
+        "source": """
+          if (ctx.text == null) return;
+          
+          // Simple keyword extraction based on word frequency
+          def text = ctx.text.toLowerCase();
+          def words = /\b\w{
+          4,
+        }\b/.matcher(text);
+          def wordFreq = [
+          :
+        ];
+          
+          while (words.find()) {
+            def word = words.group();
+            // Filter common stop words
+            if (!['that', 'this', 'with', 'from', 'have', 'been', 'were', 'will', 'would', 'could', 'should'
+          ].contains(word)) {
+              wordFreq[word
+            ] = (wordFreq[word
+            ] ?: 0) + 1;
+          }
+        }
+        // Get top keywords
+          def sortedWords = wordFreq.entrySet()
+            .stream()
+            .sorted((a, b) -> b.getValue().compareTo(a.getValue()))
+            .limit(20)
+            .map(e -> e.getKey())
+            .collect(Collectors.toList());
+          
+          ctx.keywords = sortedWords;
+        """
+      }
+    },
+    {
+      "script": {
+        "description": "Generate summary from first sentences",
+        "lang": "painless",
+        "source": """
+          if (ctx.text == null) return;
+          
+          // Extract first 2-3 sentences as summary
+          def text = ctx.text;
+          def sentences = /[.!?
+        ]+/.split(text);
+          def summary = '';
+          int count = 0;
+          
+          for (def sentence : sentences) {
+            if (count >= 3) break;
+            if (sentence.trim().length() > 20) {
+              summary += sentence.trim() + '. ';
+              count++;
+          }
+        }
+          
+          ctx.summary = summary.trim();
+        """
+      }
+    },
+    {
+      "inference": {
+        "model_id": "safety-manuals-inference",
+        "input_output": {
+          "input_field": "text",
+          "output_field": "text_embedding"
+        }
+      }
+    },
+    {
+      "set": {
+        "field": "metadata.indexed_at",
+        "value": "{{_ingest.timestamp}}"
+      }
+    }
+  ],
+  "on_failure": [
+    {
+      "set": {
+        "field": "ingest_error",
+        "value": "{{_ingest.on_failure_message}}"
+      }
+    }
+  ]
+}
