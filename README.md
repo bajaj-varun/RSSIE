@@ -17,12 +17,12 @@ The application follows a decoupled RAG pattern where retrieval (Elasticsearch) 
   - RAG Pipeline (Ingestion, Chunking, Embedding)
   - Vector Search Middleware
 - **Primary Database:** [PostgreSQL](https://www.postgresql.org/)
-  - Structured metadata (Flight schedules, Equipment IDs, User Roles)
+  - (This has not been used here for simplicity, used data generators for simulated datapoints) Structured metadata (Flight schedules, Equipment IDs, User Roles)
 - **Vector Database & Search:** [Elastic Cloud Serverless](https://www.elastic.co/serverless)
   - Hosted Vector store for safety manuals (RAG)
   - Integrated observability for real-time sensor and weather logs
-- **LLM Integration:** [OpenAI](https://openai.com/) / [Anthropic](https://www.anthropic.com/) / [Llama 3]
-  - Processes retrieved context to generate human-readable safety insights.
+- **LLM Integration:** [Jina AI](https://jina.ai/)
+  - Vector embeddings and retrival of context for Hybrid search engine to generate human-readable safety insights.
 
 ---
 
