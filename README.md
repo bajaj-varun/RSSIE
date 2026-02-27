@@ -90,3 +90,10 @@ RSSIE/
 - **Runway Friction:** Visualization of GripTester/Mu-Meter data.
 - **Weather Integration:** METAR/TAF parsing and visual alerts.
 - **Alert System:** Real-time warnings based on sensor thresholds.
+
+## Architecture 
+![Architecture](images/RSSIE.drawio.png)
+## Frontend 
+![Frontend](images/frontend.png "Frontend")
+## RAG Search
+![RAG Search](images/rag_search.png)
